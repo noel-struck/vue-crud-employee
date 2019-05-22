@@ -2,13 +2,17 @@
   <div class="home">
     <h1>testing</h1>
     <EmployeeForm @add:employee="addEmployee"/>
-    <EmployeeTable :employees="employees"/>
+    <EmployeeTable
+      @delete:employee="deleteEmployee"
+      @edit:employee="editEmployee"
+      :employees="employees"/>
   </div>
 </template>
 
 <script>
 import EmployeeTable from '@/components/EmployeeTable.vue';
 import EmployeeForm from '@/components/EmployeeForm.vue';
+import axios from 'axios';
 
 export default {
   name: 'home',
@@ -18,32 +22,46 @@ export default {
   },
   data() {
     return {
-      employees: [
-        {
-          id: 1,
-          name: 'Richard Hendricks',
-          email: 'richard@piedpiper.com',
-        },
-        {
-          id: 2,
-          name: 'Bertram Gilfoyle',
-          email: 'gilfoyle@piedpiper.com',
-        },
-        {
-          id: 3,
-          name: 'Dinesh Chugtai',
-          email: 'dinesh@piedpiper.com',
-        },
-      ],
+      employees: [],
     };
   },
+  created() {
+    this.getEmployees();
+  },
   methods: {
-    addEmployee(employee) {
-      const lastId = this.employees.length > 0 ? this.employees[this.employees.length - 1].id : 0;
-      const id = lastId + 1;
-      const newEmployee = { ...employee, id };
-      this.employees = [...this.employees, newEmployee];
-      console.log(this.employees);
+    async getEmployees() {
+      try {
+        const response = await axios('https://jsonplaceholder.typicode.com/users');
+        this.employees = response.data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async addEmployee(employee) {
+      try {
+        debugger;
+        // employee = JSON.stringify(employee);
+        const response = await axios({
+          method: 'post',
+          url: 'https://jsonplaceholder.typicode.com/users',
+          data: JSON.stringify(employee),
+          headers: { 'Content-type': 'application/json; charset=UTF-8' },
+        })
+        const newEmployee = response.data;
+        this.employees = [...this.employees, newEmployee];
+      } catch (error) {
+        console.log(error);
+      }
+      
+    },
+    deleteEmployee(id) {
+      const index = this.employees.findIndex(e => e.id === id);
+      this.employees.splice(index, 1);
+    },
+    editEmployee(id, updatedEmployee) {
+      this.employees = this.employees.map((employee) => {
+        return employee.id === id ? updatedEmployee : employee;
+      });
     },
   },
 };

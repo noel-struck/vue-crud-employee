@@ -2,19 +2,19 @@
   <div id="employee-form" @submit.prevent="handleSubmit">
     <form>
       <label for="">Employee Name:</label>
-      <input 
+      <input
         ref="first"
-        type="text" 
-        placeholder="Name" 
+        type="text"
+        placeholder="Name"
         v-model="employee.name"
         :class="{ 'has-error': submitting && invalidName }"
         @focus="clearStatus"
         @keypress="clearStatus">
       <label for="">Employee Email:</label>
 
-      <input 
-        type="email" 
-        placeholder="Email" 
+      <input
+        type="email"
+        placeholder="Email"
         v-model="employee.email"
         :class="{ 'has-error': submitting && invalidEmail }"
         @focus="clearStatus">
@@ -22,11 +22,9 @@
       <p v-if="error && submitting" class="error-message">
         Please fill out all required fields
       </p>
-
       <p v-if="success" class="success-message">
         Employee successfully added
       </p>
-      
       <button type="submit">Add Employee</button>
     </form>
   </div>
